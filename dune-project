@@ -1,5 +1,5 @@
 (lang dune 3.16)
-
+(using menhir 2.1)
 (name ski)
 
 (generate_opam_files true)
