@@ -9,17 +9,6 @@ let rec to_string' (exp : mixed) : string = match exp with
   | A (e1, e2) -> 
     "(" ^ (to_string' e1) ^ " " ^ (to_string' e2) ^ ")"
 
-let rec to_string (exp : mixed) : string = 
-  let rec inner is_right exp = 
-    match exp with
-    | Var x -> x
-    | LS -> "S" | LI -> "I" | LK -> "K"
-    | L (n, e) -> "λ" ^ n ^"." ^(to_string e)
-    | A (e1, e2) -> 
-        let s = (inner false e1) ^ (inner true e2) in
-        if is_right then "(" ^ s ^ ")" else s
-    in inner false exp 
-
 
 let test_cases = [
   Var "x", "x";
@@ -42,7 +31,7 @@ let test_cases2 = [
 
 let run_tests () =
   List.iter (fun (input, expected) ->
-      let result = to_string input in
+      let result = to_string' input in
       if result = expected then
         Printf.printf "Test passed: %s\n" expected
       else
@@ -65,8 +54,6 @@ let occurs_free x (e : mixed) =
   in
   List.mem x (fv e)
 
-
-
 let rec transform (exp : mixed) : mixed =
   match exp with
   | LS | LK | LI -> exp
@@ -88,7 +75,6 @@ let rec transform (exp : mixed) : mixed =
       | _ -> failwith "Could not transform expression"
       end
 let church_encode (n : int) : mixed =
-  (* inner builds the f(f(...(f x)...)) part *)
   let rec apply_n count =
     if count <= 0 then 
       Var "x"
@@ -143,5 +129,5 @@ let main () =
   let cl_false = A (LK, LI) in
   *)
   (* NOT operator: λb. b False True *)
-  Printf.printf "%s\n" (to_string (church_encode 2));
+  Printf.printf "%s\n" (to_string' (church_encode 2));
   run_addition_test ()

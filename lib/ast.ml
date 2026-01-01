@@ -7,6 +7,17 @@ type mixed =
   | L of string * mixed (* *)
   | A of mixed * mixed (* (_ _) *)
 
+let rec mixed_to_string (exp : mixed) : string = 
+  let rec inner is_right exp = 
+    match exp with
+    | Var x -> x
+    | LS -> "S" | LI -> "I" | LK -> "K"
+    | L (n, e) -> "λ" ^ n ^"." ^(mixed_to_string e)
+    | A (e1, e2) -> 
+        let s = (inner false e1) ^ (inner true e2) in
+        if is_right then "(" ^ s ^ ")" else s
+    in inner false exp 
+
 type comb = 
   | CVar of string
   | S
